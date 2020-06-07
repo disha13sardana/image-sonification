@@ -1,0 +1,112 @@
+---
+title: "Mixed-effect Modelling: Experiment II (Centroid)"
+author: "Disha Sardana"
+date: "6/7/2020"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(lme4)
+library(lmerTest)
+library(tidyverse)
+library(broom)
+library(ciTools)
+library(modelr)
+library(dplyr)
+library(ggplot2)
+library(readr)
+library(car)
+library(emmeans)
+```
+
+This document presents statistical analysis of the user responses in an immersive sound localization test in which users attempted to localize the edges and centroid of a 2D spatially sonified shape in an image. Users' responses were recorded for five different shapes. Images were presented to them in a random order with a random horizontal-offset for each image.
+
+The users performed this test in two scenarios: 'Stationary' and 'Moving'. In the stationary scenario, the users stood at the center of the room, where they were allowed to turn their heads and move around their position, but not walk. In the moving scenario, they were encouraged to walk around in the room. There was no time constraint for this test. Based on the results from Experiment I, the combined modulation technique was used for sonifying the 2D images.
+
+The miss-distance indicates the angular distance between the shape's mathematical centroid and the perceived center pointed at by the users. The images are named for convenience based on their shapes as: 'Amoeba',  'Bow', 'Gradient', 'Ring' and 'Snake'.
+
+### (a.) Reading the data file
+ 
+In this experiment, we used a 2×5 within-subjects design with two independent variables: two scenarios (stationary, and moving), and five shapes ('Bow', 'Ring', 'Amoeba', 'Snake', 'Gradient'), yielding ten total responses per participant for the perceived center. In total, the study resulted in 220 responses (10 $\times$ 22) for the comparison of the perceived spatial data properties in terms of the shapes' centroid.
+
+```{r}
+image_data <- read_csv('../data/miss-distances-4.csv')
+
+```
+
+### (b.) Hypotheses
+
+Null hypothesis for Experiment II is that there is no difference in the user responses depending on their physical motion and shapes of the aural images. Alternate hypotheses, with respect to the centroid of the shapes, are:
+
+- $H_{\alpha-scenario}$: There is a difference in the average miss-distances between the perceived center and the mathematical centroid of an aural image in stationary and moving scenarios, and
+
+- $H_{\alpha-shape}$: There is a difference in the average miss-distance between the perceived center and the mathematical centroid among user responses for at least one of the shapes when compared to other shapes.
+
+
+### (c.) Mixed-effect Modelling and Levene's Test
+
+We used mixed-effect modelling with Satterthwaite approximation to analyze the angular miss-distances between the centroid and the user-responses. We used Levene's test to test the homogeneity of variance condition and found out that our data (miss-distances) do not satisfy the equal variance condition. We did the log transformation of our data and fitted them to the model. Since the log transform is monotonic, this would still give us the interpretation that a significant p-value means participants were better or worse at locating the center of each shape. After taking the log transform, our data satisfied the equal variance condition.
+
+The normality of the data was not a big concern for our model, as the categorical predictors only require the mean of the group to be normally distributed, which is not an issue with the amount of data collected.  
+
+We used Tukey's method for p-value adjustment while doing the pairwise comparison to control the error rate. Tukey's method is the most common correcting approach as it is not overly conservative with respect to Type I error and also provides good power for detecting differences. 
+
+We used an $\alpha$ level of 0.05 in all significance tests and report the significance values for p < .05, p < .01, and p < .001, abbreviated by ($*$), ($**$) and ($***$) respectively.
+ 
+```{r}
+image_data$Shapes = factor(image_data$Shapes, 
+                           levels = c("Snake", "Amoeba", "Ring", "Gradient", "Bow"))
+
+# Levene's test
+leveneTest(log(value) ~ Shapes*Scenario, data = image_data)
+```
+
+```{r}
+mixed.lmer <- lmer(log(value) ~ Shapes*Scenario + (1 | User_id), 
+                  data = image_data)
+#tidy(mixed.lmer)
+summary(mixed.lmer, ddf = "Satterthwaite")
+#anova(mixed.lmer)
+
+#difflsmeans(mixed.lmer)
+```
+
+
+```{r}
+emmeans(mixed.lmer, list(pairwise~Shapes), adjust="tukey")
+```
+
+
+```{r}
+emmeans(mixed.lmer, list(pairwise~Scenario), adjust="tukey")
+```
+
+
+### (d.) Checking the equal variance assumption
+
+```{r}
+Levene.Model.F <- lm(abs(residuals(mixed.lmer))^2 ~ Shapes*Scenario, data = image_data) 
+
+#ANOVA of the squared residuals
+
+anova(Levene.Model.F)
+```
+
+
+### (e.) Checking the normality assumption
+
+```{r}
+plot(mixed.lmer)
+qqPlot(resid(mixed.lmer), pch=19, col = "maroon")
+```
+
+### (f.) Interpretation of the results
+
+With respect to the centroid, we conclude from our analysis that we fail to reject our first null hypothesis $H_{0-scenario}$. The p-value from the `pairwise differences of scenario' in the average miss-distances is 0.4866. Therefore, we do not have sufficient evidence to conclude that there exists a difference in user's responses of the perceived center of the aural images between the stationary and moving scenario. 
+
+For pairwise differences in shapes, we found out that the 'Snake' shape differs from the 'Ring', 'Bow' and 'Gradient' shape at ($***$) significance level, p-value = <.0001, 0.0059 and <0.0001 respectively. The 'Amoeba' shape differs from the 'Ring' and the 'Gradient' shape at ($***$) significance level, p-value = 0.0013 and <.0001 respectively. The 'Bow' shape differs from the 'Gradient' shape at ($***$) significance level, p-value = 0.0010 and from the 'Ring' shape at ($*$) significance level, p-value = 0.0325.
+
+ Therefore, we reject the null hypothesis $H_{0-shape}$ and conclude that there exists sufficient evidence that user-responses for the perceived center for the shapes differ from each other.
