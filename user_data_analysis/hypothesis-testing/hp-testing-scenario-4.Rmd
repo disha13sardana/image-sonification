@@ -91,7 +91,6 @@ emmeans(mixed.lmer, list(pairwise~Scenario), adjust="tukey")
 Levene.Model.F <- lm(abs(residuals(mixed.lmer))^2 ~ Shapes*Scenario, data = image_data) 
 
 #ANOVA of the squared residuals
-
 anova(Levene.Model.F)
 ```
 
@@ -105,8 +104,8 @@ qqPlot(resid(mixed.lmer), pch=19, col = "maroon")
 
 ### (f.) Interpretation of the results
 
-With respect to the centroid, we conclude from our analysis that we fail to reject our first null hypothesis $H_{0-scenario}$. The p-value from the `pairwise differences of scenario' in the average miss-distances is 0.4866. Therefore, we do not have sufficient evidence to conclude that there exists a difference in user's responses of the perceived center of the aural images between the stationary and moving scenario. 
+With respect to the centroid, we conclude from our analysis that we fail to reject our first null hypothesis $H_{0-scenario}$. The p-value from the "pairwise differences of scenario" in the average miss-distances is 0.4866. Therefore, we do not have sufficient evidence to conclude that there exists a difference in user's responses of the perceived center of the aural images between the stationary and moving scenario. 
 
-For pairwise differences in shapes, we found out that the 'Snake' shape differs from the 'Ring', 'Bow' and 'Gradient' shape at ($***$) significance level, p-value = <.0001, 0.0059 and <0.0001 respectively. The 'Amoeba' shape differs from the 'Ring' and the 'Gradient' shape at ($***$) significance level, p-value = 0.0013 and <.0001 respectively. The 'Bow' shape differs from the 'Gradient' shape at ($***$) significance level, p-value = 0.0010 and from the 'Ring' shape at ($*$) significance level, p-value = 0.0325.
+For pairwise differences in shapes, we found out that the "Snake" shape differs from the "Ring", "Bow" and "Gradient" shape at *** significance level, p-value = <.0001, 0.0059 and <0.0001 respectively. The "Amoeba" shape differs from the "Ring" and the "Gradient" shape at *** significance level, p-value = 0.0013 and <.0001 respectively. The "Bow" shape differs from the 'Gradient' shape at *** significance level, p-value = 0.0010 and from the 'Ring' shape at * significance level, p-value = 0.0325.
 
  Therefore, we reject the null hypothesis $H_{0-shape}$ and conclude that there exists sufficient evidence that user-responses for the perceived center for the shapes differ from each other.
