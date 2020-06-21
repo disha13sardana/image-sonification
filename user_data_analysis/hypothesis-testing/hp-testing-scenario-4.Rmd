@@ -54,7 +54,7 @@ The normality of the data was not a big concern for our model, as the categorica
 
 We used Tukey's method for p-value adjustment while doing the pairwise comparison to control the error rate. Tukey's method is the most common correcting approach as it is not overly conservative with respect to Type I error and also provides good power for detecting differences. 
 
-We used an $\alpha$ level of 0.05 in all significance tests and report the significance values for p < .05, p < .01, and p < .001, abbreviated by ($*$), ($**$) and ($***$) respectively.
+We used an $\alpha$ level of 0.05 in all significance tests and report the significance values for p < .05, p < .01, and p < .001, abbreviated by ($*$), ($**$) and (***) respectively.
  
 ```{r}
 image_data$Shapes = factor(image_data$Shapes, 
