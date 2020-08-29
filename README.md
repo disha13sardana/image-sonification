@@ -1,4 +1,4 @@
-# Image Sonification
+# Image Data Sonification
 
 1. 'user_data_analysis' folder contains python codes for creating boxplots of the user data collected in Experiment II, presented in Audio Mostly 2020 conference paper - .
 
