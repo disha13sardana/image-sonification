@@ -74,11 +74,9 @@ summary(mixed.lmer, ddf = "Satterthwaite")
 #difflsmeans(mixed.lmer)
 ```
 
-
 ```{r}
 emmeans(mixed.lmer, list(pairwise~Shapes), adjust="tukey")
 ```
-
 
 ```{r}
 emmeans(mixed.lmer, list(pairwise~Scenario), adjust="tukey")
